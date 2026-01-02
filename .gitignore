@@ -1,0 +1,134 @@
+##############################
+# Visual Studio / VSCode
+##############################
+
+.vs/
+.vscode/
+
+##############################
+# User-specific files
+##############################
+
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+##############################
+# Build results
+##############################
+
+Debug/
+DebugPublic/
+Release/
+RelWithDebInfo/
+MinSizeRel/
+x64/
+x86/
+ARM/
+ARM64/
+out/
+build/
+Build/
+
+##############################
+# CMake
+##############################
+
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+CMakeScripts/
+*.cmake.user
+compile_commands.json
+
+##############################
+# MSBuild / Visual Studio output
+##############################
+
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.iobj
+*.ipdb
+*.exp
+*.lib
+*.dll
+*.exe
+*.appx
+*.appxbundle
+*.log
+*.tlog
+
+##############################
+# Intermediate files
+##############################
+
+ipch/
+*.aps
+*.pch
+*.tmp
+*.temp
+*.db
+*.opendb
+
+##############################
+# Visual Studio cache
+##############################
+
+*.VC.db
+*.VC.VC.opendb
+
+##############################
+# NuGet
+##############################
+
+packages/
+*.nupkg
+*.snupkg
+.nuget/
+
+##############################
+# Test / Coverage
+##############################
+
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+##############################
+# Windows system files
+##############################
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+##############################
+# Logs
+##############################
+
+*.log
+
+##############################
+# Backup / temp
+##############################
+
+*.bak
+*.swp
+*.orig
+*~
+
+##############################
+# Optional: keep folders but ignore contents
+##############################
+
+bin/*
+obj/*
+!bin/.gitkeep
+!obj/.gitkeep
