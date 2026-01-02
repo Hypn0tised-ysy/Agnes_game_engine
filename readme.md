@@ -38,7 +38,5 @@
 定义一个空平台  
 # 构建命令  
 ```
-cd build 
-cmake .. 
-make 
+./cmake.ps1
 ```
