@@ -1,0 +1,160 @@
+#include "Allocator.hpp"
+#include <cassert>
+#include <cstring>
+
+#ifndef ALIGN
+// 将x按a向上对齐
+#define ALIGN(x, a) (((x) + ((a) - 1)) & ~((a) - 1))
+#endif
+
+My::Allocator::Allocator()
+    : m_szDataSize(0), m_szPageSize(0), m_szBlockSize(0), m_szAlignmentSize(0),
+      m_nBlocksPerPage(0), m_pPageList(nullptr), m_pFreeList(nullptr) {}
+
+My::Allocator::Allocator(size_t data_size, size_t page_size, size_t alignment)
+    : m_pPageList(nullptr), m_pFreeList(nullptr) {
+  Reset(data_size, page_size, alignment);
+}
+
+My::Allocator::~Allocator() { FreeAll(); }
+
+void My::Allocator::Reset(size_t data_size, size_t page_size,
+                          size_t alignment) {
+  /*data size 定义了最小的数据单元的大小
+  我们希望block size 至少要大于data size 并且与alignment 对齐
+  而且alignment应该是2的幂次
+  */
+
+  FreeAll();
+
+  m_szDataSize = data_size;
+  m_szPageSize = page_size;
+
+  size_t minimal_size =
+      (data_size > sizeof(BlockHeader)) ? data_size : sizeof(BlockHeader);
+
+#if defined(_DEBUG)
+  assert(alignment > 0 && ((alignment & (alignment - 1)) == 0));
+#endif
+
+  m_szBlockSize = ALIGN(minimal_size, alignment);
+
+  // 因为向上对齐多出来的空间
+  m_szAlignmentSize = m_szBlockSize - minimal_size;
+
+  m_nBlocksPerPage = (m_szPageSize - sizeof(PageHeader)) / m_szBlockSize;
+}
+
+void *My::Allocator::Alloc() {
+  // 如果有free block 直接从m_pFreeList中取出头一个block用于分配
+  // 否则需要向OS申请新页，并且维护新页的block链表，以及维护Allocator的变量
+
+  if (!m_pFreeList) {
+    // allocate a new page
+    PageHeader *pNewPage =
+        reinterpret_cast<PageHeader *>(new uint8_t[m_szPageSize]);
+    ++m_nPages;
+    m_nBlocks += m_nBlocksPerPage;
+    m_nFreeBlocks += m_nBlocksPerPage;
+
+#if defined(_DEBUG)
+    FillFreePage(pNewPage);
+#endif
+
+    if (m_pPageList) {
+      pNewPage->pNext = m_pPageList;
+    }
+
+    m_pPageList = pNewPage;
+
+    BlockHeader *pBlock = pNewPage->Blocks();
+    // link each block in the page
+    for (uint32_t i = 0; i < m_nBlocksPerPage - 1; i++) {
+      pBlock->pNext = getNextBlock(pBlock);
+      pBlock = getNextBlock(pBlock);
+    }
+    pBlock->pNext = nullptr;
+
+    m_pFreeList = pNewPage->Blocks();
+  }
+
+  BlockHeader *freeBlock = m_pFreeList;
+  m_pFreeList = m_pFreeList->pNext;
+  --m_nFreeBlocks;
+
+#if defined(_DEBUG)
+  FillAllocatedBlock(freeBlock);
+#endif
+
+  return reinterpret_cast<void *>(freeBlock);
+}
+void My::Allocator::Free(void *ptr) {
+  BlockHeader *block = reinterpret_cast<BlockHeader *>(ptr);
+
+#if defined(_DEBUG)
+  FillFreeBlock(block);
+#endif
+
+  block->pNext = m_pFreeList;
+  m_pFreeList = block;
+  ++m_nFreeBlocks;
+}
+void My::Allocator::FreeAll() {
+  PageHeader *pPage = m_pPageList;
+  while (pPage) {
+    PageHeader *_p = pPage;
+    pPage = pPage->pNext;
+
+    delete[] reinterpret_cast<uint8_t *>(_p);
+  }
+
+  m_pPageList = nullptr;
+  m_pFreeList = nullptr;
+
+  m_nPages = 0;
+  m_nBlocks = 0;
+  m_nFreeBlocks = 0;
+}
+
+My::BlockHeader *My::Allocator::getNextBlock(BlockHeader *pBlock) {
+  return reinterpret_cast<BlockHeader *>(reinterpret_cast<uint8_t *>(pBlock) +
+                                         m_szBlockSize);
+}
+
+// Debug
+#if defined(_DEBUG)
+// fill a free page with debug patterns
+void My::Allocator::FillFreePage(PageHeader *pPage) {
+  // page header
+  pPage->pNext = nullptr;
+
+  // blocks
+  BlockHeader *pBlock = pPage->Blocks();
+  for (uint32_t i = 0; i < m_nBlocksPerPage; i++) {
+    FillFreeBlock(pBlock);
+    pBlock = getNextBlock(pBlock);
+  }
+}
+
+// fill a block with debug patterns
+void My::Allocator::FillFreeBlock(BlockHeader *pBlock) {
+  // block header + data
+  std::memset(pBlock, PATTERN_FREE, m_szBlockSize - m_szAlignmentSize);
+
+  // alignment
+  std::memset(reinterpret_cast<uint8_t *>(pBlock) + m_szBlockSize -
+                  m_szAlignmentSize,
+              PATTERN_ALIGN, m_szAlignmentSize);
+}
+
+// fill an allocated block with debug patterns
+void My::Allocator::FillAllocatedBlock(
+    BlockHeader *pBlock) { // block header + data
+  std::memset(pBlock, PATTERN_ALLOC, m_szBlockSize - m_szAlignmentSize);
+
+  // alignment
+  std::memset(reinterpret_cast<uint8_t *>(pBlock) + m_szBlockSize -
+                  m_szAlignmentSize,
+              PATTERN_ALIGN, m_szAlignmentSize);
+}
+#endif
