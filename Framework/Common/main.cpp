@@ -3,8 +3,8 @@
 
 using namespace My;
 
-namespace My{
-    extern IApplication* g_pApp;//g stands for global while p stands for pointer 
+namespace My {
+    extern IApplication* g_pApp;
 }
 
 int main()

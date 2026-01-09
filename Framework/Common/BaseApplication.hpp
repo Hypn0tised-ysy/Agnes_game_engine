@@ -4,14 +4,14 @@
 namespace My {
 Interface BaseApplication : implements IApplication {
 public:
-  virtual int Initialize() ;
-  virtual void Finalize() ;
+  virtual int Initialize() override;
+  virtual void Finalize() override;
 
-  virtual void Tick() ;
+  virtual void Tick() override;
 
-  virtual bool IsQuit() ;
+  virtual bool IsQuit() override;
 
-  protected: 
-  bool m_bQuit;//m stands for member while b stands for boolean
+protected:
+  bool m_bQuit; // m stands for member while b stands for boolean
 };
 } // namespace My

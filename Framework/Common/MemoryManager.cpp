@@ -1,4 +1,5 @@
 #include "MemoryManager.hpp"
+#include <cstddef>
 #include <cstdlib>
 
 using namespace My;
@@ -78,5 +79,6 @@ Allocator *My::MemoryManager::LookUpAllocator(size_t size) {
   if (size <= kMaxBlockSize) {
     size_t index = m_pBlockSizeLookup[size];
     return &m_pAllocators[index];
-  }
+  } else
+    return nullptr;
 }
