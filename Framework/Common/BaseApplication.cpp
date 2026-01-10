@@ -1,7 +1,15 @@
 #include "BaseApplication.hpp"
+#include <iostream>
+
+bool My::BaseApplication::m_bQuit = false;
+
+My::BaseApplication::BaseApplication(GfxConfiguration &config)
+    : m_Config(config) {}
 
 int My::BaseApplication::Initialize() {
-  m_bQuit = false;
+  std::cout << "BaseApplication Initialized with configuration: " << m_Config
+            << std::endl;
+
   return 0;
 }
 
