@@ -2,7 +2,7 @@
 #include "Interface.hpp"
 
 namespace My {
-Interface IRuntimeModule {
+class IRuntimeModule {
 public:
   virtual ~IRuntimeModule(){}
 

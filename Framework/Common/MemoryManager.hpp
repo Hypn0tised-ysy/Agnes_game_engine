@@ -5,7 +5,7 @@
 #include <utility>
 
 namespace My {
-class MemoryManager : implements IRuntimeModule {
+class MemoryManager : public IRuntimeModule {
 public:
   template <typename T, typename... Arguments> T *New(Arguments... parameters) {
     return new (Allocator(sizeof(T))) T(std::forward<Arguments>(parameters)...);

@@ -11,7 +11,7 @@ struct GfxConfiguration { // Gfx stands for Graphics
                    uint32_t a = 8, uint32_t depth = 24, uint32_t stencil = 0,
                    uint32_t msaa = 0, uint32_t width = 1920,
                    uint32_t height = 1080,
-                   const wchar_t *name = L"Aganes Wickfield")
+                   const char *name = "Aganes Wickfield")
       : redBits(r), greenBits(g), blueBits(b), alphaBits(a), depthBits(depth),
         stencilBits(stencil), msaaSamples(msaa), screenWidth(width),
         screenHeight(height), appName(name) {}
@@ -25,7 +25,7 @@ struct GfxConfiguration { // Gfx stands for Graphics
   uint32_t msaaSamples;
   uint32_t screenWidth;
   uint32_t screenHeight;
-  const wchar_t *appName;
+  const char *appName;
 
   friend std::ostream &operator<<(std::ostream &out,
                                   const GfxConfiguration &config) {

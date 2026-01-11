@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdint>
 namespace My {
 // 很像xv6的run
@@ -20,10 +21,10 @@ public:
   static const uint8_t PATTERN_FREE = 0xFE;
 
   Allocator();
-  Allocator(size_t data_size, size_t page_size, size_t alignment);
+  Allocator(std::size_t data_size, std::size_t page_size, std::size_t alignment);
   ~Allocator();
 
-  void Reset(size_t data_size, size_t page_size, size_t alignment);
+  void Reset(std::size_t data_size, std::size_t page_size, std::size_t alignment);
 
   // 分配与释放blocks
   void *Alloc();

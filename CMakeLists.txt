@@ -10,26 +10,23 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(agnes_warnings INTERFACE)
 
-# clang / gcc 风格（不是 clang-cl）
 target_compile_options(agnes_warnings INTERFACE
-  $<$<CXX_COMPILER_ID:Clang,GNU>:
+  $<$<CXX_COMPILER_FRONTEND_VARIANT:GNU>:
     -Wall -Wextra
     -Wno-c++98-compat -Wno-c++98-compat-pedantic
     -Wno-padded
   >
-)
-
-# MSVC / clang-cl 风格
-target_compile_options(agnes_warnings INTERFACE
-  $<$<BOOL:${MSVC}>:
+  $<$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>:
     /W4
-    /wd4820   # padding（如果你想关 MSVC 的 padding 提示）
+    /wd4820
   >
 )
 
 include_directories("${PROJECT_SOURCE_DIR}/Framework/Common")
 include_directories("${PROJECT_SOURCE_DIR}/Framework/Interface")
+#暂时不考虑windows以外的平台
+#所以暂时不加条件编译
+include_directories("${PROJECT_SOURCE_DIR}/Platform/Windows")
 
 add_subdirectory(Framework)
-add_subdirectory(Empty)
-#add_subdirectory(Platform)
+add_subdirectory(Platform)

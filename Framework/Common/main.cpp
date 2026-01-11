@@ -1,28 +1,52 @@
-#include <stdio.h>
+#include "GraphicsManager.hpp"
 #include "IApplication.hpp"
-
-using namespace My;
+#include "MemoryManager.hpp"
+#include <stdio.h>
+#include <memory>
 
 namespace My {
-    extern IApplication* g_pApp;
-}
+std::unique_ptr<IApplication>&    getEmptyApp();
+std::unique_ptr<MemoryManager>&   getMemoryManager();
+std::unique_ptr<GraphicsManager>& getGraphicsManager();
+} // namespace My
 
-int main()
-{
-    int ret;
+int main() {
+  int ret = 0;
 
-    if(( ret=( g_pApp->Initialize()) )!=0)
-    {
-        printf("Application Initialize failed with error code %d\n", ret);
-        return ret;
-    }
+  // 取引用，避免重复调用 getter
+  auto& app = My::getEmptyApp();
+  auto& memoryManager = My::getMemoryManager();
+  auto& graphicsManager = My::getGraphicsManager();
 
-    while(!g_pApp->IsQuit())
-    {
-        g_pApp->Tick();
-    }
+  if (!app || !memoryManager || !graphicsManager) {
+    printf("Fatal: global systems not created.\n");
+    return -1;
+  }
 
-    g_pApp->Finalize();
+  if ((ret = app->Initialize()) != 0) {
+    printf("Application Initialize failed with error code %d\n", ret);
+    return ret;
+  }
 
-    return 0;
+  if ((ret = memoryManager->Initialize()) != 0) {
+    printf("MemoryManager Initialize failed with error code %d\n", ret);
+    return ret;
+  }
+
+  if ((ret = graphicsManager->Initialize()) != 0) {
+    printf("GraphicsManager Initialize failed with error code %d\n", ret);
+    return ret;
+  }
+
+  while (!app->IsQuit()) {
+    app->Tick();
+    memoryManager->Tick();
+    graphicsManager->Tick();
+  }
+
+  graphicsManager->Finalize();
+  memoryManager->Finalize();
+  app->Finalize();
+
+  return 0;
 }

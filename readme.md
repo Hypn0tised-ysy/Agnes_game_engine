@@ -3,6 +3,8 @@
 - visual studio code  
 - clang     
 - cmake    
+- Ninja    
+
 # 架构     
 1. 输入管理模块  
 负责获取用户输入    
@@ -40,3 +42,6 @@
 ```
 ./cmake.ps1
 ```
+# TODO  
+更新readme.md...
+等功能实现得完整一点再来完善一下

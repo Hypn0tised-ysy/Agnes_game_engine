@@ -4,12 +4,6 @@
 
 using namespace My;
 
-namespace My {
-    GfxConfiguration config(8, 8, 8, 8, 32, 0, 0, 960, 540, L"Game Engine From Scratch (Windows)");
-    WindowsApplication  g_App(config);
-    IApplication*       g_pApp = &g_App;
-}
-
 int My::WindowsApplication::Initialize()
 {
     int result;
@@ -43,8 +37,8 @@ int My::WindowsApplication::Initialize()
     RegisterClassEx(&wc);
 
     // create the window and use the result as the handle
-    hWnd = CreateWindowExW(0,
-                          L"GameEngineFromScratch",      // name of the window class
+    hWnd = CreateWindowEx(0,
+                          _T("Agnes Wickfield"),      // name of the window class
                           m_Config.appName,             // title of the window
                           WS_OVERLAPPEDWINDOW,              // window style
                           CW_USEDEFAULT,                    // x-position of the window
@@ -58,6 +52,8 @@ int My::WindowsApplication::Initialize()
 
     // display the window on the screen
     ShowWindow(hWnd, SW_SHOW);
+
+    m_hWnd=hWnd;
 
     return result;
 }

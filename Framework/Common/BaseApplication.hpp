@@ -3,7 +3,7 @@
 #include "IApplication.hpp"
 
 namespace My {
-Interface BaseApplication : implements IApplication {
+class BaseApplication : public IApplication {
 public:
   BaseApplication(GfxConfiguration & config); //
   virtual int Initialize() override;
@@ -12,6 +12,8 @@ public:
   virtual void Tick() override;
 
   virtual bool IsQuit() override;
+
+  virtual inline GfxConfiguration& GetGfxConfiguration() override{ return m_Config; }//inline cuz definition in hpp file
 
 public:
 protected:
